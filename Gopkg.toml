@@ -32,3 +32,7 @@
 [[constraint]]
   name = "github.com/pivotal-cf/brokerapi"
   version = "3.0.3"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/cloudfoundry-community/go-cfclient"
