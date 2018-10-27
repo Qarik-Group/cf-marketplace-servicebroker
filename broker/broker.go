@@ -22,6 +22,13 @@ func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) (catalog []broke
 			Description: "This is a CF service we found for you to use",
 			ID:          "4f618a0d-8f29-42e2-a3b1-9ff294726226",
 			Bindable:    true,
+			Plans: []brokerapi.ServicePlan{
+				brokerapi.ServicePlan{
+					ID:          "bb0c42c8-66ad-4d82-929d-172dc415fea8",
+					Name:        "plan-a",
+					Description: "Probably smallest plan",
+				},
+			},
 		},
 	}
 	return
