@@ -16,7 +16,14 @@ func NewMarketplaceBrokerImpl() (bkr *MarketplaceBrokerImpl) {
 }
 
 func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) (catalog []brokerapi.Service, err error) {
-	catalog = []brokerapi.Service{}
+	catalog = []brokerapi.Service{
+		brokerapi.Service{
+			Name:        "some-cf-service",
+			Description: "This is a CF service we found for you to use",
+			ID:          "4f618a0d-8f29-42e2-a3b1-9ff294726226",
+			Bindable:    true,
+		},
+	}
 	return
 }
 
