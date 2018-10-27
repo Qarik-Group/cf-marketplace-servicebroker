@@ -15,8 +15,9 @@ func NewMarketplaceBrokerImpl() (bkr *MarketplaceBrokerImpl) {
 	return &MarketplaceBrokerImpl{}
 }
 
-func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) ([]brokerapi.Service, error) {
-	panic("not implemented")
+func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) (catalog []brokerapi.Service, err error) {
+	catalog = []brokerapi.Service{}
+	return
 }
 
 func (bkr *MarketplaceBrokerImpl) Provision(ctx context.Context, instanceID string, details brokerapi.ProvisionDetails, asyncAllowed bool) (brokerapi.ProvisionedServiceSpec, error) {
