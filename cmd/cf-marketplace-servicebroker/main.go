@@ -19,11 +19,14 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
-	"github.com/starkandwayne/cf-marketplace-servicebroker/broker"
+	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/broker"
+	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/version"
 
 	"code.cloudfoundry.org/lager"
+	cf "github.com/cloudfoundry-community/go-cfclient"
 	"github.com/pivotal-cf/brokerapi"
 )
 
@@ -33,6 +36,34 @@ func main() {
 	logger := lager.NewLogger("cf-marketplace-servicebroker")
 	logger.RegisterSink(lager.NewWriterSink(os.Stdout, lager.DEBUG))
 	logger.RegisterSink(lager.NewWriterSink(os.Stderr, lager.ERROR))
+
+	if os.Getenv("CF_API") == "" {
+		fmt.Fprintln(os.Stderr, "ERROR: configure with $CF_API, and either $CF_ACCESS_TOKEN, or both $CF_USERNAME, $CF_PASSWORD")
+		os.Exit(1)
+	}
+	fmt.Printf("Connecting to Cloud Foundry %s...", os.Getenv("CF_API"))
+	cfclient, err := cf.NewClient(&cf.Config{
+		ApiAddress:        os.Getenv("CF_API"),
+		Username:          os.Getenv("CF_USERNANE"),
+		Password:          os.Getenv("CF_PASSWORD"),
+		Token:             os.Getenv("CF_ACCESS_TOKEN"),
+		SkipSslValidation: os.Getenv("CF_SKIP_SSL_VALIDATION") == "true",
+		HttpClient:        http.DefaultClient,
+		UserAgent:         "cf-marketplace-servicebrokers/" + version.Version,
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("done!")
+
+	fmt.Printf("\nFetching marketplace services...")
+	cfServices, err := cfclient.ListServicesByQuery(url.Values{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("done!")
+
+	fmt.Printf("Found %d services\n", len(cfServices))
 
 	brokerCredentials := brokerapi.BrokerCredentials{
 		Username: "",
@@ -47,6 +78,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	fmt.Println("Starting Cloud Foundry Marketplace Broker on 0.0.0.0:" + port)
+	fmt.Println("\n\nStarting Cloud Foundry Marketplace Broker on 0.0.0.0:" + port)
 	logger.Fatal("http-listen", http.ListenAndServe("0.0.0.0:"+port, nil))
 }
