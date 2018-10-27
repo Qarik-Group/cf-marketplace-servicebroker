@@ -16,8 +16,38 @@ limitations under the License.
 
 package main
 
-import "log"
+import (
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/starkandwayne/cf-marketplace-servicebroker/broker"
+
+	"code.cloudfoundry.org/lager"
+	"github.com/pivotal-cf/brokerapi"
+)
 
 func main() {
-	log.Printf("hello, world!")
+	fmt.Println("Starting Cloud Foundry Marketplace Broker...")
+	servicebroker := broker.NewMarketplaceBrokerImpl()
+
+	logger := lager.NewLogger("cf-marketplace-servicebroker")
+	logger.RegisterSink(lager.NewWriterSink(os.Stdout, lager.DEBUG))
+	logger.RegisterSink(lager.NewWriterSink(os.Stderr, lager.ERROR))
+
+	brokerCredentials := brokerapi.BrokerCredentials{
+		Username: "",
+		Password: "",
+	}
+
+	brokerAPI := brokerapi.New(servicebroker, logger, brokerCredentials)
+
+	http.Handle("/", brokerAPI)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	logger.Info("start", lager.Data{"status": "listening: 0.0.0.0:" + port})
+	logger.Fatal("http-listen", http.ListenAndServe("0.0.0.0:"+port, nil))
 }
