@@ -28,7 +28,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Starting Cloud Foundry Marketplace Broker...")
 	servicebroker := broker.NewMarketplaceBrokerImpl()
 
 	logger := lager.NewLogger("cf-marketplace-servicebroker")
@@ -48,6 +47,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	logger.Info("start", lager.Data{"status": "listening: 0.0.0.0:" + port})
+	fmt.Println("Starting Cloud Foundry Marketplace Broker on 0.0.0.0:" + port)
 	logger.Fatal("http-listen", http.ListenAndServe("0.0.0.0:"+port, nil))
 }
