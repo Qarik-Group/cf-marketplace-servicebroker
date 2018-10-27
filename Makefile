@@ -13,13 +13,13 @@
 # limitations under the License.
 
 # The binary to build (just the basename).
-BIN := myapp
+BIN := cf-marketplace-servicebroker
 
 # This repo's root import path (under GOPATH).
-PKG := github.com/thockin/go-build-template
+PKG := github.com/stasrkandwayne/cf-marketplace-servicebroker
 
 # Where to push the docker image.
-REGISTRY ?= thockin
+REGISTRY ?= starkandwayne
 
 # Which architecture to build - see $(ALL_ARCH) for options.
 ARCH ?= amd64
