@@ -11,14 +11,25 @@ cf login -a $CF_API --sso
 export CF_ACCESS_TOKEN="$(cf oauth-token | awk '{print $2}')"
 ```
 
-Next, run the broker:
+Next, run the broker.
 
-```console
-$ go run cmd/cf-marketplace-servicebroker/main.go
-Starting Cloud Foundry Marketplace Broker...
+From source:
+
+```shell
+go run cmd/cf-marketplace-servicebroker/main.go
 ```
 
-In another:
+From Docker image:
+
+```sehll
+docker run \
+    -e CF_API=https://api.run.pivotal.io \
+    -e CF_ACCESS_TOKEN="$(cf oauth-token | awk '{print $2}')" \
+    -p 8080:8080 \
+    starkandwayne/cf-marketplace-servicebroker
+```
+
+In another terminal:
 
 ```example
 curl -u: -H 'X-Broker-API-Version: 2.12' localhost:8080/v2/catalog
