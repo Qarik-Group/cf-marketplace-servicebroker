@@ -6,8 +6,9 @@ In one terminal, first configure for target Cloud Foundry:
 
 ```commands
 export CF_API=https://api.run.pivotal.io
-export CF_ACCESS_TOKEN="$(cat ~/.cf/config.json | jq -r .AccessToken | awk '{print $2}')"
 cf login -a $CF_API --sso
+
+export CF_ACCESS_TOKEN="$(cf oauth-token | awk '{print $2}')"
 ```
 
 Next, run the broker:
