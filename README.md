@@ -20,6 +20,24 @@ helm upgrade pws-broker ./helm \
     --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')"
 ```
 
+Next, follow the instructions for registering with your Service Catalog. You'll now be able to view/provision/bind services within your Kubernetes cluster that are actually provisioned in the remote Cloud Foundry environment.
+
+```console
+$ svcat get plans
+               NAME                NAMESPACE                          CLASS                                   DESCRIPTION
++--------------------------------+-----------+-----------------------------------------------------+--------------------------------+
+  trial                                        p-config-server                                       Service instances using this
+                                                                                                     plan are deleted automatically
+                                                                                                     7 days after creation
+  standard                                     p-config-server                                       Standard Plan
+  small                                        searchify                                             Small
+  pro                                          searchify                                             Pro
+  plus                                         searchify                                             Plus
+  essential                                    amazon-s3-starkandwayne-optigit                       An S3 plan providing a single
+                                                                                                     bucket with unlimited storage.
+  standard                                     scheduler-for-pcf                                     Scheduler for PCF
+```
+
 ## Dev/test
 
 In one terminal, first configure for target Cloud Foundry:
