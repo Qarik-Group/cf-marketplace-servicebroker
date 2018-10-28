@@ -118,8 +118,8 @@ func main() {
 	}
 
 	brokerCredentials := brokerapi.BrokerCredentials{
-		Username: "",
-		Password: "",
+		Username: "broker",
+		Password: "broker",
 	}
 
 	brokerAPI := brokerapi.New(servicebroker, logger, brokerCredentials)
