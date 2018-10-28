@@ -62,16 +62,24 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("done!")
+	fmt.Println("OK!")
 
 	fmt.Printf("\nFetching marketplace services...")
 	cfServices, err := cfclient.ListServicesByQuery(url.Values{})
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("done!")
-
+	fmt.Println("OK!")
 	fmt.Printf("Found %d services\n", len(cfServices))
+
+	fmt.Printf("Fetching service plans...")
+	cfServicePlans, err := cfclient.ListServicePlans()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("OK!")
+	fmt.Printf("Found %d service plans\n", len(cfServicePlans))
+
 	broker.Marketplace = make([]brokerapi.Service, len(cfServices))
 	for i, cfService := range cfServices {
 		broker.Marketplace[i].Name = cfService.Label
@@ -85,12 +93,27 @@ func main() {
 			panic(err)
 		}
 		broker.Marketplace[i].Metadata = metadata
-		broker.Marketplace[i].Plans = []brokerapi.ServicePlan{
-			brokerapi.ServicePlan{
-				ID:          "bb0c42c8-66ad-4d82-929d-172dc415fea8",
-				Name:        "plan-a",
-				Description: "Probably smallest plan",
-			},
+		plansCount := 0
+		for _, cfPlan := range cfServicePlans {
+			if cfService.Guid == cfPlan.ServiceGuid {
+				plansCount++
+			}
+		}
+		broker.Marketplace[i].Plans = make([]brokerapi.ServicePlan, plansCount)
+
+		planIndex := 0
+		for _, cfPlan := range cfServicePlans {
+			if cfService.Guid == cfPlan.ServiceGuid {
+				fmt.Printf("Adding plan %s to service %s\n", cfPlan.Name, cfService.Label)
+				broker.Marketplace[i].Plans[planIndex] = brokerapi.ServicePlan{
+					ID:          cfPlan.Guid,
+					Name:        cfPlan.Name,
+					Description: cfPlan.Description,
+					Free:        &cfPlan.Free,
+					Bindable:    &cfPlan.Bindable,
+				}
+				planIndex++
+			}
 		}
 	}
 
