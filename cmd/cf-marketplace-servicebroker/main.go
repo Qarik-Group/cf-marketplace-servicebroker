@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -71,6 +72,27 @@ func main() {
 	fmt.Println("done!")
 
 	fmt.Printf("Found %d services\n", len(cfServices))
+	broker.Marketplace = make([]brokerapi.Service, len(cfServices))
+	for i, cfService := range cfServices {
+		broker.Marketplace[i].Name = cfService.Label
+		broker.Marketplace[i].ID = cfService.Guid
+		broker.Marketplace[i].Description = cfService.Description
+		broker.Marketplace[i].Bindable = cfService.Bindable
+		broker.Marketplace[i].Tags = cfService.Tags
+		metadata := &brokerapi.ServiceMetadata{}
+		err := json.Unmarshal([]byte(cfService.Extra), metadata)
+		if err != nil {
+			panic(err)
+		}
+		broker.Marketplace[i].Metadata = metadata
+		broker.Marketplace[i].Plans = []brokerapi.ServicePlan{
+			brokerapi.ServicePlan{
+				ID:          "bb0c42c8-66ad-4d82-929d-172dc415fea8",
+				Name:        "plan-a",
+				Description: "Probably smallest plan",
+			},
+		}
+	}
 
 	brokerCredentials := brokerapi.BrokerCredentials{
 		Username: "",
