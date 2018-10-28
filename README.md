@@ -1,10 +1,30 @@
 # Service Broker for a Cloud Foundry Marketplace
 
+## Install with Helm
+
+```shell
+export CF_API=https://api.run.pivotal.io
+cf login -a $CF_API --sso
+
+helm install ./helm --name pws-broker --wait \
+    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')"
+```
+
+To update/upgrade:
+
+```shell
+export CF_API=https://api.run.pivotal.io
+cf login -a $CF_API --sso
+
+helm upgrade pws-broker ./helm \
+    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')"
+```
+
 ## Dev/test
 
 In one terminal, first configure for target Cloud Foundry:
 
-```commands
+```shell
 export CF_API=https://api.run.pivotal.io
 cf login -a $CF_API --sso
 
