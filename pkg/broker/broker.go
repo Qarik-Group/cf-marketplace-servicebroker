@@ -2,6 +2,7 @@ package broker
 
 import (
 	"context"
+	"errors"
 
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/cfconfig"
 
@@ -62,6 +63,10 @@ func (bkr *MarketplaceBrokerImpl) Provision(ctx context.Context, instanceID stri
 		"operation-data":        spec.OperationData,
 		"last-operation.status": svcInstance.LastOperation.State,
 	})
+
+	if svcInstance.LastOperation.State == "failed" {
+		err = errors.New("cf failed to provision: " + svcInstance.LastOperation.Description)
+	}
 
 	return
 }
