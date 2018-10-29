@@ -11,7 +11,7 @@ import (
 
 // Deprovision forwards on a service instance deprovision request to the backend Cloud Foundry API
 func (bkr *MarketplaceBrokerImpl) Deprovision(ctx context.Context, instanceID string, details brokerapi.DeprovisionDetails, asyncAllowed bool) (spec brokerapi.DeprovisionServiceSpec, err error) {
-	bkr.Logger.Info("deprovision.start", lager.Data{"guid": instanceID})
+	bkr.Logger.Info("deprovision.start", lager.Data{"instanceID": instanceID})
 
 	cfclient, err := bkr.CF.Client()
 	if err != nil {
@@ -37,9 +37,12 @@ func (bkr *MarketplaceBrokerImpl) Deprovision(ctx context.Context, instanceID st
 		return
 	}
 
-	cfSvcInstanceID := svcInstances[0].Guid
+	cfSvcInstance, err := bkr.lookupServiceInstance(cfclient, instanceID)
+	if err != nil {
+		return
+	}
 
-	err = cfclient.DeleteServiceInstance(cfSvcInstanceID, true, true)
+	err = cfclient.DeleteServiceInstance(cfSvcInstance.Guid, true, true)
 
 	errMsg := ""
 	if err != nil {
@@ -47,8 +50,8 @@ func (bkr *MarketplaceBrokerImpl) Deprovision(ctx context.Context, instanceID st
 	}
 
 	bkr.Logger.Info("deprovision.end", lager.Data{
-		"guid":  instanceID,
-		"error": errMsg,
+		"instanceID": instanceID,
+		"error":      errMsg,
 	})
 	return
 }
