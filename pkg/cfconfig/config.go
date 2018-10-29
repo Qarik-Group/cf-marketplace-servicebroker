@@ -2,7 +2,12 @@ package cfconfig
 
 import (
 	"fmt"
+	"net/http"
 	"os"
+
+	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/version"
+
+	cf "github.com/cloudfoundry-community/go-cfclient"
 )
 
 // Config contains the initial configuration for a target Cloud Foundry environment
@@ -12,6 +17,8 @@ type Config struct {
 	Username          string
 	Password          string
 	AccessToken       string
+
+	HTTPClient *http.Client
 }
 
 // NewConfigFromEnvVars constructs a Config from environment variables
@@ -27,4 +34,20 @@ func NewConfigFromEnvVars() (config *Config) {
 		Password:          os.Getenv("CF_PASSWORD"),
 		AccessToken:       os.Getenv("CF_ACCESS_TOKEN"),
 	}
+}
+
+func (config *Config) Client() (cfclient *cf.Client) {
+	cfclient, err := cf.NewClient(&cf.Config{
+		ApiAddress:        config.API,
+		Username:          config.Username,
+		Password:          config.Password,
+		Token:             config.AccessToken,
+		SkipSslValidation: config.SSLSkipValidation,
+		HttpClient:        config.HTTPClient,
+		UserAgent:         "cf-marketplace-servicebrokers/" + version.Version,
+	})
+	if err != nil {
+		panic(err)
+	}
+	return cfclient
 }

@@ -3,20 +3,25 @@ package broker
 import (
 	"context"
 
+	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/cfconfig"
+
 	"github.com/pivotal-cf/brokerapi"
 )
 
 // MarketplaceBrokerImpl describes the implementation of a broker of services registered to a single
 // Cloud Foundry's marketplace
 type MarketplaceBrokerImpl struct {
+	CF *cfconfig.Config
 }
 
 // Marketplace is the cache of services/plans offered by the target Cloud Foundry
 var Marketplace []brokerapi.Service
 
 // NewMarketplaceBrokerImpl creates a MarketplaceBrokerImpl
-func NewMarketplaceBrokerImpl() (bkr *MarketplaceBrokerImpl) {
-	return &MarketplaceBrokerImpl{}
+func NewMarketplaceBrokerImpl(cf *cfconfig.Config) (bkr *MarketplaceBrokerImpl) {
+	return &MarketplaceBrokerImpl{
+		CF: cf,
+	}
 }
 
 // Services creates the data returned by Broker API's GET /v2/catalog endpoint

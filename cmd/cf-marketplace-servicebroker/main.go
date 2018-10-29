@@ -26,10 +26,8 @@ import (
 
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/broker"
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/cfconfig"
-	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/version"
 
 	"code.cloudfoundry.org/lager"
-	cf "github.com/cloudfoundry-community/go-cfclient"
 	"github.com/pivotal-cf/brokerapi"
 )
 
@@ -38,32 +36,18 @@ func statusAPI(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	servicebroker := broker.NewMarketplaceBrokerImpl()
-
 	logger := lager.NewLogger("cf-marketplace-servicebroker")
 	logger.RegisterSink(lager.NewWriterSink(os.Stdout, lager.DEBUG))
 	logger.RegisterSink(lager.NewWriterSink(os.Stderr, lager.ERROR))
 
-	cfconfig := cfconfig.NewConfigFromEnvVars()
+	cf := cfconfig.NewConfigFromEnvVars()
+	fmt.Printf("Connecting to Cloud Foundry %s...", cf.API)
 
 	// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
-	var netClient = &http.Client{
+	cf.HTTPClient = &http.Client{
 		Timeout: 3 * time.Second,
 	}
-
-	fmt.Printf("Connecting to Cloud Foundry %s...", cfconfig.API)
-	cfclient, err := cf.NewClient(&cf.Config{
-		ApiAddress:        cfconfig.API,
-		Username:          cfconfig.Username,
-		Password:          cfconfig.Password,
-		Token:             cfconfig.AccessToken,
-		SkipSslValidation: cfconfig.SSLSkipValidation,
-		HttpClient:        netClient,
-		UserAgent:         "cf-marketplace-servicebrokers/" + version.Version,
-	})
-	if err != nil {
-		panic(err)
-	}
+	cfclient := cf.Client()
 	fmt.Println("OK!")
 
 	fmt.Printf("\nFetching marketplace services...")
@@ -123,6 +107,8 @@ func main() {
 		Username: "broker",
 		Password: "broker",
 	}
+
+	servicebroker := broker.NewMarketplaceBrokerImpl(cf)
 
 	brokerAPI := brokerapi.New(servicebroker, logger, brokerCredentials)
 
