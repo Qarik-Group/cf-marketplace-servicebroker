@@ -34,6 +34,10 @@ spec:
             value: "{{ .Values.cf.password }}"
           - name: CF_ACCESS_TOKEN
             value: "{{ .Values.cf.accessToken }}"
+          - name: CF_ORGANIZATION_GUID
+            value: "{{ .Values.cf.organizationGUID }}"
+          - name: CF_SPACE_GUID
+            value: "{{ .Values.cf.spaceGUID }}"
           ports:
             - name: http
               containerPort: 8080

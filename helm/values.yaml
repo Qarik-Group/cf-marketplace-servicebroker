@@ -23,6 +23,8 @@ cf:
   username: ""
   password: ""
   accessToken: ""
+  organizationGUID: ""
+  spaceGUID: ""
 
 ingress:
   enabled: false

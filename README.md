@@ -2,22 +2,36 @@
 
 ## Install with Helm
 
+Login to Cloud Foundry and create a space into which service instances will be created.
+
 ```shell
 export CF_API=https://api.run.pivotal.io
 cf login -a $CF_API --sso
 
-helm install ./helm --name pws-broker --wait \
-    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')"
+cf create-space playtime-cf-marketplace
+cf target -s playtime-cf-marketplace
 ```
 
-To update/upgrade:
+Next, config and install the Helm chart:
+
+```shell
+helm install ./helm --name pws-broker --wait \
+    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')" \
+    --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
+    --set "cf.spaceGUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)"
+```
+
+To upgrade, first login and target the space. Then run `helm upgrade`:
 
 ```shell
 export CF_API=https://api.run.pivotal.io
 cf login -a $CF_API --sso
+cf target -s playtime-cf-marketplace
 
 helm upgrade pws-broker ./helm \
-    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')"
+    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')" \
+    --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
+    --set "cf.spaceGUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)"
 ```
 
 Next, follow the instructions for registering with your Service Catalog. You'll now be able to view/provision/bind services within your Kubernetes cluster that are actually provisioned in the remote Cloud Foundry environment.
