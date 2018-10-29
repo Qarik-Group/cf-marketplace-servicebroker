@@ -38,22 +38,14 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-          # TODO: probe endpoints that don't require basic auth (which will be configurable)
-          # livenessProbe:
-          #   httpGet:
-          #     path: /v2/catalog
-          #     port: http
-          #     httpHeaders:
-          #     # echo -n ":" | base64
-          #     - name: Authorization
-          #       value: Basic Og==
-          # readinessProbe:
-          #   httpGet:
-          #     path: /v2/catalog
-          #     port: http
-          #     httpHeaders:
-          #     - name: Authorization
-          #       value: Basic Og==
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
