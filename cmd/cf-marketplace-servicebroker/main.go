@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/broker"
+	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/cfconfig"
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/version"
 
 	"code.cloudfoundry.org/lager"
@@ -43,23 +44,20 @@ func main() {
 	logger.RegisterSink(lager.NewWriterSink(os.Stdout, lager.DEBUG))
 	logger.RegisterSink(lager.NewWriterSink(os.Stderr, lager.ERROR))
 
-	if os.Getenv("CF_API") == "" {
-		fmt.Fprintln(os.Stderr, "ERROR: configure with $CF_API, and either $CF_ACCESS_TOKEN, or both $CF_USERNAME, $CF_PASSWORD")
-		os.Exit(1)
-	}
+	cfconfig := cfconfig.NewConfigFromEnvVars()
 
 	// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 	var netClient = &http.Client{
 		Timeout: 3 * time.Second,
 	}
 
-	fmt.Printf("Connecting to Cloud Foundry %s...", os.Getenv("CF_API"))
+	fmt.Printf("Connecting to Cloud Foundry %s...", cfconfig.API)
 	cfclient, err := cf.NewClient(&cf.Config{
-		ApiAddress:        os.Getenv("CF_API"),
-		Username:          os.Getenv("CF_USERNANE"),
-		Password:          os.Getenv("CF_PASSWORD"),
-		Token:             os.Getenv("CF_ACCESS_TOKEN"),
-		SkipSslValidation: os.Getenv("CF_SKIP_SSL_VALIDATION") == "true",
+		ApiAddress:        cfconfig.API,
+		Username:          cfconfig.Username,
+		Password:          cfconfig.Password,
+		Token:             cfconfig.AccessToken,
+		SkipSslValidation: cfconfig.SSLSkipValidation,
 		HttpClient:        netClient,
 		UserAgent:         "cf-marketplace-servicebrokers/" + version.Version,
 	})
