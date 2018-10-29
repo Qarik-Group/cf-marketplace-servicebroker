@@ -12,17 +12,19 @@ import (
 // constructs this OSBAPI /v2/catalog of provided services
 //
 // When written, it was assumed this function was only run once during start up.
-func (config *Config) DiscoverMarketplace() (err error) {
+// So it exits the application rather than return an error.
+func (config *Config) DiscoverMarketplace() {
+	fmt.Printf("Connecting to Cloud Foundry %s...", config.API)
 	cfclient, err := config.Client()
 	if err != nil {
-		return err
+		panic(err)
 	}
 	fmt.Println("OK!")
 
 	fmt.Printf("\nFetching marketplace services...")
 	cfServices, err := cfclient.ListServicesByQuery(url.Values{})
 	if err != nil {
-		return err
+		panic(err)
 	}
 	fmt.Println("OK!")
 	fmt.Printf("Found %d services\n", len(cfServices))
@@ -30,7 +32,7 @@ func (config *Config) DiscoverMarketplace() (err error) {
 	fmt.Printf("Fetching service plans...")
 	cfServicePlans, err := cfclient.ListServicePlans()
 	if err != nil {
-		return err
+		panic(err)
 	}
 	fmt.Println("OK!")
 	fmt.Printf("Found %d service plans\n", len(cfServicePlans))
@@ -45,7 +47,7 @@ func (config *Config) DiscoverMarketplace() (err error) {
 		metadata := &brokerapi.ServiceMetadata{}
 		err := json.Unmarshal([]byte(cfService.Extra), metadata)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		config.Marketplace[i].Metadata = metadata
 		plansCount := 0
@@ -71,5 +73,4 @@ func (config *Config) DiscoverMarketplace() (err error) {
 			}
 		}
 	}
-	return
 }

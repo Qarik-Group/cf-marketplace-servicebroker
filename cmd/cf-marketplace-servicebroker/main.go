@@ -38,17 +38,15 @@ func main() {
 	logger.RegisterSink(lager.NewWriterSink(os.Stderr, lager.ERROR))
 
 	cf := cfconfig.NewConfigFromEnvVars()
-	fmt.Printf("Connecting to Cloud Foundry %s...", cf.API)
-
 	cf.DiscoverMarketplace()
+	cf.CreateBindingApp()
+
+	servicebroker := broker.NewMarketplaceBrokerImpl(cf, logger)
 
 	brokerCredentials := brokerapi.BrokerCredentials{
 		Username: "broker",
 		Password: "broker",
 	}
-
-	servicebroker := broker.NewMarketplaceBrokerImpl(cf, logger)
-
 	brokerAPI := brokerapi.New(servicebroker, logger, brokerCredentials)
 
 	http.HandleFunc("/health", statusAPI)
