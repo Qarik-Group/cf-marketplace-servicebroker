@@ -11,12 +11,15 @@ import (
 type MarketplaceBrokerImpl struct {
 }
 
+// Marketplace is the cache of services/plans offered by the target Cloud Foundry
 var Marketplace []brokerapi.Service
 
+// NewMarketplaceBrokerImpl creates a MarketplaceBrokerImpl
 func NewMarketplaceBrokerImpl() (bkr *MarketplaceBrokerImpl) {
 	return &MarketplaceBrokerImpl{}
 }
 
+// Services creates the data returned by Broker API's GET /v2/catalog endpoint
 func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) (catalog []brokerapi.Service, err error) {
 	return Marketplace, nil
 }
