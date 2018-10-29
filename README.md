@@ -40,13 +40,18 @@ $ svcat get plans
 
 ## Dev/test
 
-In one terminal, first configure for target Cloud Foundry:
+In one terminal, first configure for target Cloud Foundry and create a space into which service instances will be created:
 
 ```shell
 export CF_API=https://api.run.pivotal.io
 cf login -a $CF_API --sso
 
+cf create-space playtime-cf-marketplace
+cf target -s playtime-cf-marketplace
+
 export CF_ACCESS_TOKEN="$(cf oauth-token | awk '{print $2}')"
+export CF_ORGANIZATION_GUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)
+export CF_SPACE_GUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)
 ```
 
 Next, run the broker.

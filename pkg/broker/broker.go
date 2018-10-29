@@ -39,7 +39,7 @@ func (bkr *MarketplaceBrokerImpl) Provision(ctx context.Context, instanceID stri
 	req := cf.ServiceInstanceRequest{
 		Name:            instanceID,
 		ServicePlanGuid: details.PlanID,
-		SpaceGuid:       details.SpaceGUID,
+		SpaceGuid:       bkr.CF.SpaceGUID,
 		// Parameters:      details.RawParameters,
 	}
 
