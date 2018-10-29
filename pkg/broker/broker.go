@@ -5,31 +5,69 @@ import (
 
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/cfconfig"
 
+	"code.cloudfoundry.org/lager"
+	cf "github.com/cloudfoundry-community/go-cfclient"
 	"github.com/pivotal-cf/brokerapi"
 )
 
 // MarketplaceBrokerImpl describes the implementation of a broker of services registered to a single
 // Cloud Foundry's marketplace
 type MarketplaceBrokerImpl struct {
-	CF *cfconfig.Config
+	CF     *cfconfig.Config
+	Logger lager.Logger
 }
 
 // Marketplace is the cache of services/plans offered by the target Cloud Foundry
 var Marketplace []brokerapi.Service
 
 // NewMarketplaceBrokerImpl creates a MarketplaceBrokerImpl
-func NewMarketplaceBrokerImpl(cf *cfconfig.Config) (bkr *MarketplaceBrokerImpl) {
+func NewMarketplaceBrokerImpl(cf *cfconfig.Config, logger lager.Logger) (bkr *MarketplaceBrokerImpl) {
 	return &MarketplaceBrokerImpl{
-		CF: cf,
+		CF:     cf,
+		Logger: logger,
 	}
 }
 
-// Services creates the data returned by Broker API's GET /v2/catalog endpoint
+// Services creates the data returned by this Broker API's GET /v2/catalog endpoint
 func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) (catalog []brokerapi.Service, err error) {
 	return Marketplace, nil
 }
 
-func (bkr *MarketplaceBrokerImpl) Provision(ctx context.Context, instanceID string, details brokerapi.ProvisionDetails, asyncAllowed bool) (brokerapi.ProvisionedServiceSpec, error) {
+// Provision forwards on a service instance provision request to the backend Cloud Foundry API
+func (bkr *MarketplaceBrokerImpl) Provision(ctx context.Context, instanceID string, details brokerapi.ProvisionDetails, asyncAllowed bool) (spec brokerapi.ProvisionedServiceSpec, err error) {
+	bkr.Logger.Info("provision.start", lager.Data{"guid": instanceID})
+	req := cf.ServiceInstanceRequest{
+		Name:            instanceID,
+		ServicePlanGuid: details.PlanID,
+		SpaceGuid:       details.SpaceGUID,
+		// Parameters:      details.RawParameters,
+	}
+
+	cfclient, err := bkr.CF.Client()
+	if err != nil {
+		return
+	}
+	svcInstance, err := cfclient.CreateServiceInstance(req)
+	if err != nil {
+		return
+	}
+
+	spec.DashboardURL = svcInstance.DashboardUrl
+	spec.IsAsync = svcInstance.LastOperation.State == "in progress"
+	spec.OperationData = "provision::" + svcInstance.Guid
+
+	bkr.Logger.Info("provision.end", lager.Data{
+		"guid":                  instanceID,
+		"async":                 spec.IsAsync,
+		"operation-data":        spec.OperationData,
+		"last-operation.status": svcInstance.LastOperation.State,
+	})
+
+	return
+}
+
+// LastOperation looks up readiness/failure of asynchronous operations
+func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID string, details brokerapi.PollDetails) (brokerapi.LastOperation, error) {
 	panic("not implemented")
 }
 
@@ -54,10 +92,6 @@ func (bkr *MarketplaceBrokerImpl) GetBinding(ctx context.Context, instanceID, bi
 }
 
 func (bkr *MarketplaceBrokerImpl) Update(ctx context.Context, instanceID string, details brokerapi.UpdateDetails, asyncAllowed bool) (brokerapi.UpdateServiceSpec, error) {
-	panic("not implemented")
-}
-
-func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID string, details brokerapi.PollDetails) (brokerapi.LastOperation, error) {
 	panic("not implemented")
 }
 

@@ -45,9 +45,12 @@ func main() {
 
 	// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 	cf.HTTPClient = &http.Client{
-		Timeout: 3 * time.Second,
+		Timeout: 120 * time.Second,
 	}
-	cfclient := cf.Client()
+	cfclient, err := cf.Client()
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("OK!")
 
 	fmt.Printf("\nFetching marketplace services...")
@@ -108,7 +111,7 @@ func main() {
 		Password: "broker",
 	}
 
-	servicebroker := broker.NewMarketplaceBrokerImpl(cf)
+	servicebroker := broker.NewMarketplaceBrokerImpl(cf, logger)
 
 	brokerAPI := brokerapi.New(servicebroker, logger, brokerCredentials)
 

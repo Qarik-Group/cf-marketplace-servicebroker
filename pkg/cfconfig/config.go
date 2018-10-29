@@ -36,8 +36,8 @@ func NewConfigFromEnvVars() (config *Config) {
 	}
 }
 
-func (config *Config) Client() (cfclient *cf.Client) {
-	cfclient, err := cf.NewClient(&cf.Config{
+func (config *Config) Client() (cfclient *cf.Client, err error) {
+	return cf.NewClient(&cf.Config{
 		ApiAddress:        config.API,
 		Username:          config.Username,
 		Password:          config.Password,
@@ -46,8 +46,4 @@ func (config *Config) Client() (cfclient *cf.Client) {
 		HttpClient:        config.HTTPClient,
 		UserAgent:         "cf-marketplace-servicebrokers/" + version.Version,
 	})
-	if err != nil {
-		panic(err)
-	}
-	return cfclient
 }
