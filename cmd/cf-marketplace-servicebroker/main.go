@@ -32,6 +32,10 @@ import (
 	"github.com/pivotal-cf/brokerapi"
 )
 
+func statusAPI(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "OK")
+}
+
 func main() {
 	servicebroker := broker.NewMarketplaceBrokerImpl()
 
@@ -124,6 +128,7 @@ func main() {
 
 	brokerAPI := brokerapi.New(servicebroker, logger, brokerCredentials)
 
+	http.HandleFunc("/health", statusAPI)
 	http.Handle("/", brokerAPI)
 
 	port := os.Getenv("PORT")
