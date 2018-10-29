@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/pivotal-cf/brokerapi"
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/version"
 
 	cf "github.com/cloudfoundry-community/go-cfclient"
@@ -24,6 +25,9 @@ type Config struct {
 	SpaceGUID        string
 
 	HTTPClient *http.Client
+
+	// Marketplace is the cache of services/plans offered by the target Cloud Foundry
+	Marketplace []brokerapi.Service
 }
 
 // NewConfigFromEnvVars constructs a Config from environment variables

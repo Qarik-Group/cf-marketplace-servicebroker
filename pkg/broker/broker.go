@@ -16,9 +16,6 @@ type MarketplaceBrokerImpl struct {
 	Logger lager.Logger
 }
 
-// Marketplace is the cache of services/plans offered by the target Cloud Foundry
-var Marketplace []brokerapi.Service
-
 // NewMarketplaceBrokerImpl creates a MarketplaceBrokerImpl
 func NewMarketplaceBrokerImpl(cf *cfconfig.Config, logger lager.Logger) (bkr *MarketplaceBrokerImpl) {
 	return &MarketplaceBrokerImpl{
@@ -29,7 +26,7 @@ func NewMarketplaceBrokerImpl(cf *cfconfig.Config, logger lager.Logger) (bkr *Ma
 
 // Services creates the data returned by this Broker API's GET /v2/catalog endpoint
 func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) (catalog []brokerapi.Service, err error) {
-	return Marketplace, nil
+	return bkr.CF.Marketplace, nil
 }
 
 // LastOperation looks up readiness/failure of asynchronous operations
