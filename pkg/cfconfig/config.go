@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/version"
 
@@ -49,6 +50,12 @@ func NewConfigFromEnvVars() (config *Config) {
 }
 
 func (config *Config) Client() (cfclient *cf.Client, err error) {
+	// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
+	if config.HTTPClient == nil {
+		config.HTTPClient = &http.Client{
+			Timeout: 120 * time.Second,
+		}
+	}
 	return cf.NewClient(&cf.Config{
 		ApiAddress:        config.API,
 		Username:          config.Username,

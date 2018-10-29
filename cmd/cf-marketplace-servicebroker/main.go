@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"time"
 
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/broker"
 	"github.com/starkandwayne/cf-marketplace-servicebroker/pkg/cfconfig"
@@ -43,10 +42,6 @@ func main() {
 	cf := cfconfig.NewConfigFromEnvVars()
 	fmt.Printf("Connecting to Cloud Foundry %s...", cf.API)
 
-	// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
-	cf.HTTPClient = &http.Client{
-		Timeout: 120 * time.Second,
-	}
 	cfclient, err := cf.Client()
 	if err != nil {
 		panic(err)
