@@ -40,7 +40,7 @@ func main() {
 	cf := cfconfig.NewConfigFromEnvVars()
 	fmt.Printf("Connecting to Cloud Foundry %s...", cf.API)
 
-	cf.DiscoverCloudFoundryMarketplace()
+	cf.DiscoverMarketplace()
 
 	brokerCredentials := brokerapi.BrokerCredentials{
 		Username: "broker",

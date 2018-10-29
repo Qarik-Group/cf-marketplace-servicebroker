@@ -8,11 +8,11 @@ import (
 	"github.com/pivotal-cf/brokerapi"
 )
 
-// DiscoverCloudFoundryMarketplace fetches all Services & Plans and
+// DiscoverMarketplace fetches all Services & Plans and
 // constructs this OSBAPI /v2/catalog of provided services
 //
 // When written, it was assumed this function was only run once during start up.
-func (config *Config) DiscoverCloudFoundryMarketplace() (err error) {
+func (config *Config) DiscoverMarketplace() (err error) {
 	cfclient, err := config.Client()
 	if err != nil {
 		return err
