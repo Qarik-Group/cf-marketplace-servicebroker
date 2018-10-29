@@ -37,10 +37,6 @@ func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID 
 	panic("not implemented")
 }
 
-func (bkr *MarketplaceBrokerImpl) Deprovision(ctx context.Context, instanceID string, details brokerapi.DeprovisionDetails, asyncAllowed bool) (brokerapi.DeprovisionServiceSpec, error) {
-	panic("not implemented")
-}
-
 func (bkr *MarketplaceBrokerImpl) GetInstance(ctx context.Context, instanceID string) (brokerapi.GetInstanceDetailsSpec, error) {
 	panic("not implemented")
 }
