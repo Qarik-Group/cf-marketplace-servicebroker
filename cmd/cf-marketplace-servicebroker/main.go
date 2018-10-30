@@ -39,7 +39,11 @@ func main() {
 
 	cf := cfconfig.NewConfigFromEnvVars()
 	cf.DiscoverMarketplace()
-	cf.CreateBindingApp()
+
+	// TODO: The services that do not support service keys also don't support any binding
+	// TODO: Test more services until we find at least 1 that supports binding but not service keys
+	// TODO: else delete this code
+	// cf.CreateBindingApp()
 
 	servicebroker := broker.NewMarketplaceBrokerImpl(cf, logger)
 
