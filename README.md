@@ -115,15 +115,15 @@ docker run \
 In another terminal:
 
 ```example
-curl -u: -H 'X-Broker-API-Version: 2.14' localhost:8080/v2/catalog
+curl -u broker:broker -H 'X-Broker-API-Version: 2.14' localhost:8080/v2/catalog
 ```
 
 Or setup `eden`:
 
 ```bash
 export SB_BROKER_URL=http://localhost:8080
-export SB_BROKER_USERNAME=
-export SB_BROKER_PASSWORD=
+export SB_BROKER_USERNAME=broker
+export SB_BROKER_PASSWORD=broker
 ```
 
 And see catalog:
