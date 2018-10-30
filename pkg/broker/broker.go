@@ -38,10 +38,6 @@ func (bkr *MarketplaceBrokerImpl) GetInstance(ctx context.Context, instanceID st
 	panic("not implemented")
 }
 
-func (bkr *MarketplaceBrokerImpl) Unbind(ctx context.Context, instanceID, bindingID string, details brokerapi.UnbindDetails, asyncAllowed bool) (brokerapi.UnbindSpec, error) {
-	panic("not implemented")
-}
-
 func (bkr *MarketplaceBrokerImpl) GetBinding(ctx context.Context, instanceID, bindingID string) (brokerapi.GetBindingSpec, error) {
 	panic("not implemented")
 }

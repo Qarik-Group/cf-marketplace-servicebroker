@@ -36,3 +36,25 @@ func (bkr *MarketplaceBrokerImpl) lookupServiceInstance(cfclient *cf.Client, ins
 	svcInstance = &svcInstances[0]
 	return
 }
+
+func (bkr *MarketplaceBrokerImpl) lookupServiceKey(cfclient *cf.Client, svcInstance *cf.ServiceInstance, bindingID string) (svcKey *cf.ServiceKey, err error) {
+	query := url.Values{
+		"q": []string{
+			fmt.Sprintf("name:%s", bindingID),
+			fmt.Sprintf("service_instance_guid:%s", svcInstance.Guid),
+		},
+	}
+	svcKeys, err := cfclient.ListServiceKeysByQuery(query)
+	if err == nil && len(svcKeys) == 0 {
+		err = fmt.Errorf("No Cloud Foundry service keys found for binding ID %s", bindingID)
+	}
+	if err == nil && len(svcKeys) > 1 {
+		err = fmt.Errorf("Too many Cloud Foundry service keys found for query '%s'", query.Encode())
+	}
+	if err != nil {
+		return
+	}
+
+	svcKey = &svcKeys[0]
+	return
+}

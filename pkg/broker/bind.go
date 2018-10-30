@@ -43,9 +43,6 @@ func (bkr *MarketplaceBrokerImpl) Bind(ctx context.Context, instanceID, bindingI
 
 	svcBinding.Credentials = svcKey.Credentials
 
-	bkr.Logger.Info("bind.end", lager.Data{
-		"instanceID": instanceID,
-		"bindID":     bindingID,
-	})
+	bkr.Logger.Info("bind.end", lager.Data{"instanceID": instanceID, "bindID": bindingID})
 	return
 }
