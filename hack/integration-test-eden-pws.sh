@@ -27,6 +27,15 @@ function finish {
 }
 trap finish EXIT TERM QUIT INT
 
+function curlBroker {
+  path=$1; shift
+  curl -sSf -H 'X-Broker-API-Version: 2.14' -u "${SB_BROKER_USERNAME}:${SB_BROKER_PASSWORD}" ${SB_BROKER_URL}${path} "$@"
+}
+
+echo
+echo "** API GetInstance..."
+curlBroker /v2/service_instances/${instanceID}
+
 echo
 echo "** Create binding for elephantsql/turtle..."
 eden bind -i ${instanceID}
@@ -41,12 +50,12 @@ cat $EDEN_CONFIG
 bindingID=$(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/id)
 
 echo
-echo "** Unbinding from elephantsql/turtle..."
-eden unbind -i ${instanceID} -b ${bindingID}
+echo "** API GetBinding..."
+curlBroker /v2/service_instances/${instanceID}/service_bindings/${bindingID}
 
 echo
-echo "** View Cloud Foundry service key created"
-cf service-keys ${instanceID}
+echo "** Unbinding from elephantsql/turtle..."
+eden unbind -i ${instanceID} -b ${bindingID}
 
 echo
 echo "** Deprovisioning elephantsql/turtle (${instanceID})..."
