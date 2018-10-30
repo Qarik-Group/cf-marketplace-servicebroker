@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"code.cloudfoundry.org/lager"
-	cf "github.com/cloudfoundry-community/go-cfclient"
 	"github.com/pivotal-cf/brokerapi"
 )
 
@@ -14,32 +13,22 @@ func (bkr *MarketplaceBrokerImpl) Bind(ctx context.Context, instanceID, bindingI
 
 	cfclient, err := bkr.CF.Client()
 	if err != nil {
-		return
+		return svcBinding, brokerapi.NewFailureResponse(err, 400, "cf-client")
 	}
 
 	cfSvcInstance, err := bkr.lookupServiceInstance(cfclient, instanceID)
 	if err != nil {
-		return
+		return svcBinding, brokerapi.NewFailureResponse(err, 400, "lookup-service")
 	}
-
-	svcKeyReq := cf.CreateServiceKeyRequest{
-		ServiceInstanceGuid: cfSvcInstance.Guid,
-		Name:                bindingID,
-		// Parameters: details.GetRawParameters(),
-	}
-	var svcKey cf.ServiceKey
-	svcKey, err = cfclient.CreateServiceKey(svcKeyReq)
-	svcBinding.Credentials = svcKey.Credentials
-
-	errMsg := ""
+	cfBindResp, err := cfclient.CreateServiceBinding(bkr.CF.BindingAppGUID, cfSvcInstance.Guid)
 	if err != nil {
-		errMsg = err.Error()
+		return svcBinding, brokerapi.NewFailureResponse(err, 400, "create-binding")
 	}
+	svcBinding.Credentials = cfBindResp.Credentials
 
-	bkr.Logger.Info("deprovision.end", lager.Data{
+	bkr.Logger.Info("bind.end", lager.Data{
 		"instanceID": instanceID,
 		"bindID":     bindingID,
-		"error":      errMsg,
 	})
 	return
 }
