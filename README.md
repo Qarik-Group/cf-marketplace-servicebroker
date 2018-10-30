@@ -10,6 +10,7 @@
 - [ ] support provision/bind parameters
 - [ ] create target space if missing
 - [ ] cache cfclient if its slow?
+- [ ] kubernetes/service catalog users mapped to backend Cloud Foundry users (perhaps with [Originating Identity](https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#originating-identity))
 
 ## Install with Helm
 
