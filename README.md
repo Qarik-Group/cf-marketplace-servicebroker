@@ -6,7 +6,9 @@ Login to Cloud Foundry and create a space into which service instances will be c
 
 ```shell
 export CF_API=https://api.run.pivotal.io
-cf login -a $CF_API --sso
+export CF_USERNAME=...
+export CF_PASSWORD=...
+cf login -a $CF_API -u $CF_USERNAME -p $CF_PASSWORD
 
 cf create-space playtime-cf-marketplace
 cf target -s playtime-cf-marketplace
@@ -16,7 +18,8 @@ Next, config and install the Helm chart:
 
 ```shell
 helm install ./helm --name pws-broker --wait \
-    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')" \
+    --set "cf.api=$CF_API" \
+    --set "cf.username=${CF_USERNAME:?required},cf.password=${CF_PASSWORD:?required}" \
     --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
     --set "cf.spaceGUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)"
 ```
@@ -25,11 +28,14 @@ To upgrade, first login and target the space. Then run `helm upgrade`:
 
 ```shell
 export CF_API=https://api.run.pivotal.io
-cf login -a $CF_API --sso
+export CF_USERNAME=...
+export CF_PASSWORD=...
+cf login -a $CF_API -u $CF_USERNAME -p $CF_PASSWORD
 cf target -s playtime-cf-marketplace
 
 helm upgrade pws-broker ./helm \
-    --set "cf.api=$CF_API,cf.accessToken=$(cf oauth-token | awk '{print $2}')" \
+    --set "cf.api=$CF_API" \
+    --set "cf.username=${CF_USERNAME:?required},cf.password=${CF_PASSWORD:?required}" \
     --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
     --set "cf.spaceGUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)"
 ```
@@ -58,12 +64,13 @@ In one terminal, first configure for target Cloud Foundry and create a space int
 
 ```shell
 export CF_API=https://api.run.pivotal.io
-cf login -a $CF_API --sso
+export CF_USERNAME=...
+export CF_PASSWORD=...
+cf login -a $CF_API -u $CF_USERNAME -p $CF_PASSWORD
 
 cf create-space playtime-cf-marketplace
 cf target -s playtime-cf-marketplace
 
-export CF_ACCESS_TOKEN="$(cf oauth-token | awk '{print $2}')"
 export CF_ORGANIZATION_GUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)
 export CF_SPACE_GUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)
 ```
@@ -80,8 +87,9 @@ From Docker image:
 
 ```sehll
 docker run \
-    -e CF_API=https://api.run.pivotal.io \
-    -e CF_ACCESS_TOKEN="$(cf oauth-token | awk '{print $2}')" \
+    -e CF_API=$CF_API \
+    -e CF_USERNAME=$CF_USERNAME \
+    -e CF_PASSWORD=$CF_PASSWORD \
     -p 8080:8080 \
     starkandwayne/cf-marketplace-servicebroker
 ```
