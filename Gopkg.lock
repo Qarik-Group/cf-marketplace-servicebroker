@@ -44,13 +44,14 @@
   version = "v1.6.2"
 
 [[projects]]
+  branch = "retrievable"
   name = "github.com/pivotal-cf/brokerapi"
   packages = [
     ".",
     "auth"
   ]
-  revision = "9ed104edeebff19a9ec70c859e312257ae6c5450"
-  version = "v3.0.3"
+  revision = "fa431ac2cea870295c5526eb9303fb4eca1531d4"
+  source = "github.com/drnic/brokerapi"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -65,7 +66,7 @@
     "context",
     "context/ctxhttp"
   ]
-  revision = "9b4f9f5ad5197c79fd623a3638e70d8b26cef344"
+  revision = "c44066c5c816ec500d459a2a324a753f78531ae0"
 
 [[projects]]
   branch = "master"
@@ -100,6 +101,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "85421956078330b2a72453a3f490444ef149e67f74bc7b0d954c1063719e6607"
+  inputs-digest = "037b0ae7f7a359831cf47b2eba02c52c53e8523f4131bd5e8d954e7fe11678cd"
   solver-name = "gps-cdcl"
   solver-version = 1

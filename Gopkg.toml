@@ -31,7 +31,9 @@
 
 [[constraint]]
   name = "github.com/pivotal-cf/brokerapi"
-  version = "3.0.3"
+  # version = "3.0.3"
+  source = "github.com/drnic/brokerapi"
+  branch = "retrievable"
 
 [[constraint]]
   branch = "master"

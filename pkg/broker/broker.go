@@ -34,10 +34,6 @@ func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID 
 	panic("not implemented")
 }
 
-func (bkr *MarketplaceBrokerImpl) GetInstance(ctx context.Context, instanceID string) (brokerapi.GetInstanceDetailsSpec, error) {
-	panic("not implemented")
-}
-
 func (bkr *MarketplaceBrokerImpl) GetBinding(ctx context.Context, instanceID, bindingID string) (brokerapi.GetBindingSpec, error) {
 	panic("not implemented")
 }
