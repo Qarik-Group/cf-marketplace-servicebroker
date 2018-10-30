@@ -1,5 +1,14 @@
 # Service Broker for a Cloud Foundry Marketplace
 
+## TODOs & Ideas
+
+- [ ] support UAA client/secret
+- [ ] support async brokers with LastOperation/LastBindingOperation
+- [ ] support GetInstance/GetBinding
+- [ ] support Update
+- [ ] create target space if missing
+- [ ] cache cfclient if its slow?
+
 ## Install with Helm
 
 Login to Cloud Foundry and create a space into which service instances will be created.
