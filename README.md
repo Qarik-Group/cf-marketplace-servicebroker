@@ -2,7 +2,7 @@
 
 ## TODOs & Ideas
 
-- [ ] support UAA client/secret
+- [X] support UAA client/secret
 - [ ] support async brokers with LastOperation/LastBindingOperation
 - [ ] support GetInstance/GetBinding
 - [ ] support Update
@@ -10,6 +10,8 @@
 - [ ] cache cfclient if its slow?
 
 ## Install with Helm
+
+You can configure the service broker to interact with a single Cloud Foundry API using a pre-existing user, or a UAA client (replace `cf.username` and `cf.password` values below with `cf.uaa_client_id` and `cf.uaa_client_secret` values).
 
 Login to Cloud Foundry and create a space into which service instances will be created.
 
@@ -32,6 +34,11 @@ helm install ./helm --name pws-broker --wait \
     --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
     --set "cf.spaceGUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)"
 ```
+
+Alternately, instead of a username/password you can use an appropriate UAA client/secret:
+
+
+
 
 To upgrade, first login and target the space. Then run `helm upgrade`:
 

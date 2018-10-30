@@ -32,6 +32,10 @@ spec:
             value: "{{ .Values.cf.username }}"
           - name: CF_PASSWORD
             value: "{{ .Values.cf.password }}"
+          - name: CF_UAA_CLIENT_ID
+            value: "{{ .Values.cf.uaaClientID }}"
+          - name: CF_UAA_CLIENT_SECRET
+            value: "{{ .Values.cf.uaaClientSecret }}"
           - name: CF_ACCESS_TOKEN
             value: "{{ .Values.cf.accessToken }}"
           - name: CF_ORGANIZATION_GUID

@@ -18,6 +18,8 @@ type Config struct {
 	SSLSkipValidation bool
 	Username          string
 	Password          string
+	UAAClientID       string
+	UAAClientSecret   string
 	AccessToken       string
 
 	// Initially provision all services instances into one CF space
@@ -43,6 +45,8 @@ func NewConfigFromEnvVars() (config *Config) {
 		SSLSkipValidation: os.Getenv("CF_SKIP_SSL_VALIDATION") == "true",
 		Username:          os.Getenv("CF_USERNAME"),
 		Password:          os.Getenv("CF_PASSWORD"),
+		UAAClientID:       os.Getenv("CF_UAA_CLIENT_ID"),
+		UAAClientSecret:   os.Getenv("CF_UAA_CLIENT_SECRET"),
 		AccessToken:       os.Getenv("CF_ACCESS_TOKEN"),
 
 		OrganizationGUID: os.Getenv("CF_ORGANIZATION_GUID"),
@@ -75,6 +79,8 @@ func (config *Config) Client() (cfclient *cf.Client, err error) {
 		ApiAddress:        config.API,
 		Username:          config.Username,
 		Password:          config.Password,
+		ClientID:          config.UAAClientID,
+		ClientSecret:      config.UAAClientSecret,
 		Token:             config.AccessToken,
 		SkipSslValidation: config.SSLSkipValidation,
 		HttpClient:        config.HTTPClient,

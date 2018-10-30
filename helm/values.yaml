@@ -22,6 +22,8 @@ cf:
   api: ""
   username: ""
   password: ""
+  uaaClientID: ""
+  uaaClientSecret: ""
   accessToken: ""
   organizationGUID: ""
   spaceGUID: ""
