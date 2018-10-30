@@ -4,7 +4,7 @@
 
 - [X] support UAA client/secret
 - [x] support [GetInstance](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance)
-- [ ] support [GetBinding](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding) and update /v2/catalog
+- [x] support [GetBinding](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding) and update /v2/catalog
 - [ ] support Update
 - [ ] support async brokers with LastOperation/LastBindingOperation
 - [ ] deprovision should also unbind all service keys
