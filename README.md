@@ -3,9 +3,11 @@
 ## TODOs & Ideas
 
 - [X] support UAA client/secret
-- [ ] support async brokers with LastOperation/LastBindingOperation
-- [ ] support GetInstance/GetBinding
+- [ ] support [GetInstance](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance) / [GetBinding](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding) and update /v2/catalog
 - [ ] support Update
+- [ ] support async brokers with LastOperation/LastBindingOperation
+- [ ] deprovision should also unbind all service keys
+- [ ] support provision/bind parameters
 - [ ] create target space if missing
 - [ ] cache cfclient if its slow?
 
@@ -113,7 +115,7 @@ docker run \
 In another terminal:
 
 ```example
-curl -u: -H 'X-Broker-API-Version: 2.12' localhost:8080/v2/catalog
+curl -u: -H 'X-Broker-API-Version: 2.14' localhost:8080/v2/catalog
 ```
 
 Or setup `eden`:
