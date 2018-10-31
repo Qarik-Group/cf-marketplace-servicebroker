@@ -35,6 +35,7 @@ func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID 
 }
 
 func (bkr *MarketplaceBrokerImpl) Update(ctx context.Context, instanceID string, details brokerapi.UpdateDetails, asyncAllowed bool) (brokerapi.UpdateServiceSpec, error) {
+	// TODO: https://github.com/cloudfoundry-community/go-cfclient/issues/211
 	panic("not implemented")
 }
 

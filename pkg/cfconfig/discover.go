@@ -46,6 +46,7 @@ func (config *Config) DiscoverMarketplace() {
 		config.Marketplace[i].Tags = cfService.Tags
 		config.Marketplace[i].InstancesRetrievable = true
 		config.Marketplace[i].BindingsRetrievable = true
+		config.Marketplace[i].PlanUpdatable = false
 		metadata := &brokerapi.ServiceMetadata{}
 		err := json.Unmarshal([]byte(cfService.Extra), metadata)
 		if err != nil {
