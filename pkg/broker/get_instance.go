@@ -28,6 +28,14 @@ func (bkr *MarketplaceBrokerImpl) GetInstance(ctx context.Context, instanceID st
 	// TODO: spec.Parameters = cfSvcInstance.
 	// https://apidocs.cloudfoundry.org/5.4.0/service_instances/retrieve_a_particular_service_instance_parameters_experimental.html
 
+	// But, this API seems to delegate to backend broker which probably doesn't also implement GetInstance
+	// $ cf curl /v2/service_instances/ca97fac8-98df-49a1-9d8b-1c7565937a1e/parameters
+	// {
+	//    "description": "This service does not support fetching service instance parameters.",
+	//    "error_code": "CF-ServiceFetchInstanceParametersNotSupported",
+	//    "code": 120004
+	// }
+
 	bkr.Logger.Info("get-instance.end", lager.Data{"instanceID": instanceID})
 	return
 }
