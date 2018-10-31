@@ -5,15 +5,22 @@
 - [X] support UAA client/secret
 - [x] support [GetInstance](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance)
 - [x] support [GetBinding](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding) and update /v2/catalog
-- [ ] support Update (requires https://github.com/cloudfoundry-community/go-cfclient/issues/211)
-- [ ] correctly consider [`?accepts_incomplete=false`](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#asynchronous-operations)
 - [x] support async brokers with LastOperation
-- [ ] support async brokers with LastBindingOperation
+- [ ] support Update (requires https://github.com/cloudfoundry-community/go-cfclient/issues/211)
 - [ ] deprovision should also unbind all service keys
 - [ ] support provision/bind parameters
 - [ ] create target space if missing
 - [ ] cache cfclient if its slow?
 - [ ] kubernetes/service catalog users mapped to backend Cloud Foundry users (perhaps with [Originating Identity](https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#originating-identity))
+
+Edge cases:
+
+- [ ] correctly consider [`?accepts_incomplete=false`](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#asynchronous-operations)
+- [ ] [410 Gone on LastOperation](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#polling-last-operation-for-service-instances)
+
+Blocked:
+
+- [ ] support async brokers with LastBindingOperation (blocked by https://github.com/cloudfoundry/cloud_controller_ng/issues/1246)
 
 ## Install with Helm
 
