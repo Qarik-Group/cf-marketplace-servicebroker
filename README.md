@@ -6,7 +6,9 @@
 - [x] support [GetInstance](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance)
 - [x] support [GetBinding](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding) and update /v2/catalog
 - [ ] support Update (requires https://github.com/cloudfoundry-community/go-cfclient/issues/211)
-- [ ] support async brokers with LastOperation/LastBindingOperation
+- [ ] correctly consider [`?accepts_incomplete=false`](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#asynchronous-operations)
+- [x] support async brokers with LastOperation
+- [ ] support async brokers with LastBindingOperation
 - [ ] deprovision should also unbind all service keys
 - [ ] support provision/bind parameters
 - [ ] create target space if missing

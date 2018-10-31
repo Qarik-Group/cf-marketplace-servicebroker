@@ -26,6 +26,7 @@ func (bkr *MarketplaceBrokerImpl) GetInstance(ctx context.Context, instanceID st
 	spec.ServiceID = cfSvcInstance.ServiceGuid
 	spec.DashboardURL = cfSvcInstance.DashboardUrl
 	// TODO: spec.Parameters = cfSvcInstance.
+	// https://apidocs.cloudfoundry.org/5.4.0/service_instances/retrieve_a_particular_service_instance_parameters_experimental.html
 
 	bkr.Logger.Info("get-instance.end", lager.Data{"instanceID": instanceID})
 	return

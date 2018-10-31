@@ -29,16 +29,12 @@ func (bkr *MarketplaceBrokerImpl) Services(ctx context.Context) (catalog []broke
 	return bkr.CF.Marketplace, nil
 }
 
-// LastOperation looks up readiness/failure of asynchronous operations
-func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID string, details brokerapi.PollDetails) (brokerapi.LastOperation, error) {
-	panic("not implemented")
-}
-
 func (bkr *MarketplaceBrokerImpl) Update(ctx context.Context, instanceID string, details brokerapi.UpdateDetails, asyncAllowed bool) (brokerapi.UpdateServiceSpec, error) {
 	// TODO: https://github.com/cloudfoundry-community/go-cfclient/issues/211
 	panic("not implemented")
 }
 
+// LastOperation looks up readiness/failure of asynchronous binding operations
 func (bkr *MarketplaceBrokerImpl) LastBindingOperation(ctx context.Context, instanceID, bindingID string, details brokerapi.PollDetails) (brokerapi.LastOperation, error) {
 	panic("not implemented")
 }
