@@ -3,15 +3,12 @@ package broker
 import (
 	"context"
 
-	"code.cloudfoundry.org/lager"
 	"github.com/pivotal-cf/brokerapi"
 )
 
 // LastOperation looks up readiness/failure of asynchronous provision/update/deprovision operations
 // https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#polling-last-operation-for-service-instances
 func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID string, details brokerapi.PollDetails) (spec brokerapi.LastOperation, err error) {
-	bkr.Logger.Info("last-operation.start", lager.Data{"instanceID": instanceID})
-
 	cfclient, err := bkr.CF.Client()
 	if err != nil {
 		return spec, brokerapi.NewFailureResponse(err, 400, "cf-client")
@@ -27,6 +24,5 @@ func (bkr *MarketplaceBrokerImpl) LastOperation(ctx context.Context, instanceID 
 	spec.State = brokerapi.LastOperationState(cfSvcInstance.LastOperation.State)
 	spec.Description = cfSvcInstance.LastOperation.Description
 
-	bkr.Logger.Info("last-operation.end", lager.Data{"instanceID": instanceID})
 	return
 }
