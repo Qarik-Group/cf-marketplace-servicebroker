@@ -6,12 +6,11 @@
 - [x] support [GetInstance](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance)
 - [x] support [GetBinding](https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding) and update /v2/catalog
 - [x] support async brokers with LastOperation
-- [ ] support Update (requires https://github.com/cloudfoundry-community/go-cfclient/issues/211)
-- [ ] deprovision should also unbind all service keys
 - [ ] support provision/bind parameters
+- [ ] support Update (requires https://github.com/cloudfoundry-community/go-cfclient/issues/211)
 - [ ] create target space if missing
-- [ ] cache cfclient if its slow?
 - [ ] kubernetes/service catalog users mapped to backend Cloud Foundry users (perhaps with [Originating Identity](https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#originating-identity))
+- [ ] deprovision could also unbind all service keys
 
 Edge cases:
 

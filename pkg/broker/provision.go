@@ -12,6 +12,8 @@ import (
 // Provision forwards on a service instance provision request to the backend Cloud Foundry API
 func (bkr *MarketplaceBrokerImpl) Provision(ctx context.Context, instanceID string, details brokerapi.ProvisionDetails, asyncAllowed bool) (spec brokerapi.ProvisionedServiceSpec, err error) {
 	bkr.Logger.Info("provision.start", lager.Data{"instanceID": instanceID})
+	// var params map[string]interface{}
+	fmt.Printf("Parameters: %#v\n", details.RawParameters)
 	req := cf.ServiceInstanceRequest{
 		Name:            instanceID,
 		ServicePlanGuid: details.PlanID,
