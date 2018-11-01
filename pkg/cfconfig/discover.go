@@ -64,13 +64,14 @@ func (config *Config) DiscoverMarketplace() {
 		planIndex := 0
 		for _, cfPlan := range cfServicePlans {
 			if cfService.Guid == cfPlan.ServiceGuid {
-				fmt.Printf("Adding plan %s to service %s\n", cfPlan.Name, cfService.Label)
+				free := cfPlan.Free
+				bindable := cfPlan.Bindable
 				config.Marketplace[i].Plans[planIndex] = brokerapi.ServicePlan{
 					ID:          cfPlan.Guid,
 					Name:        cfPlan.Name,
 					Description: cfPlan.Description,
-					Free:        &cfPlan.Free,
-					Bindable:    &cfPlan.Bindable,
+					Free:        &free,
+					Bindable:    &bindable,
 				}
 				planIndex++
 			}
