@@ -9,6 +9,7 @@
 - [ ] support provision/bind parameters
 - [ ] support Update (requires https://github.com/cloudfoundry-community/go-cfclient/issues/211)
 - [ ] create target space if missing
+- [ ] one space per kubernetes namespace
 - [ ] kubernetes/service catalog users mapped to backend Cloud Foundry users (perhaps with [Originating Identity](https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#originating-identity))
 - [ ] deprovision could also unbind all service keys
 
