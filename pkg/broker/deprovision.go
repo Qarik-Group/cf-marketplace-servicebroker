@@ -18,7 +18,9 @@ func (bkr *MarketplaceBrokerImpl) Deprovision(ctx context.Context, instanceID st
 
 	cfSvcInstance, err := bkr.lookupServiceInstance(cfclient, instanceID)
 	if err != nil {
-		return spec, brokerapi.NewFailureResponse(err, 400, "lookup-service")
+		// Whilst it is an internal error, if the backend service doesn't exist anymore then allow Deprovision to succeed.
+		bkr.Logger.Error("lookup-service-instance", err, lager.Data{"instanceID": instanceID})
+		return spec, nil
 	}
 
 	err = cfclient.DeleteServiceInstance(cfSvcInstance.Guid, true, true)

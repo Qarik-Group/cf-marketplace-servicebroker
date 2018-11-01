@@ -17,12 +17,16 @@ func (bkr *MarketplaceBrokerImpl) Unbind(ctx context.Context, instanceID, bindin
 
 	cfSvcInstance, err := bkr.lookupServiceInstance(cfclient, instanceID)
 	if err != nil {
-		return unbindSpec, brokerapi.NewFailureResponse(err, 400, "lookup-service-instance")
+		// Whilst it is an internal error, if the backend service doesn't exist anymore then allow Unbind to succeed.
+		bkr.Logger.Error("lookup-service-instance", err, lager.Data{"instanceID": instanceID, "bindID": bindingID})
+		return unbindSpec, nil
 	}
 
 	cfSvcKey, err := bkr.lookupServiceKey(cfclient, cfSvcInstance, bindingID)
 	if err != nil {
-		return unbindSpec, brokerapi.NewFailureResponse(err, 400, "lookup-service-key")
+		// Whilst it is an internal error, if the backend service key doesn't exist anymore then allow Unbind to succeed.
+		bkr.Logger.Error("lookup-service-key", err, lager.Data{"instanceID": instanceID, "bindID": bindingID})
+		return unbindSpec, nil
 	}
 
 	err = cfclient.DeleteServiceKey(cfSvcKey.Guid)
