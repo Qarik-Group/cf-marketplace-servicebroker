@@ -24,7 +24,7 @@ Blocked:
 
 - [ ] support async brokers with LastBindingOperation (blocked by https://github.com/cloudfoundry/cloud_controller_ng/issues/1246)
 
-## Install with Helm
+## Install/upgrade with Helm
 
 You can configure the service broker to interact with a single Cloud Foundry API using a pre-existing user, or a UAA client (replace `cf.username` and `cf.password` values below with `cf.uaa_client_id` and `cf.uaa_client_secret` values).
 
@@ -40,31 +40,10 @@ cf create-space playtime-cf-marketplace
 cf target -s playtime-cf-marketplace
 ```
 
-Next, config and install the Helm chart:
+Next, install/upgrade the Helm chart:
 
 ```shell
-helm install ./helm --name pws-broker --wait \
-    --set "cf.api=$CF_API" \
-    --set "cf.username=${CF_USERNAME:?required},cf.password=${CF_PASSWORD:?required}" \
-    --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
-    --set "cf.spaceGUID=$(jq -r .SpaceFields.GUID ~/.cf/config.json)"
-```
-
-Alternately, instead of a username/password you can use an appropriate UAA client/secret:
-
-
-
-
-To upgrade, first login and target the space. Then run `helm upgrade`:
-
-```shell
-export CF_API=https://api.run.pivotal.io
-export CF_USERNAME=...
-export CF_PASSWORD=...
-cf login -a $CF_API -u $CF_USERNAME -p $CF_PASSWORD
-cf target -s playtime-cf-marketplace
-
-helm upgrade pws-broker ./helm \
+helm upgrade --install pws-broker ./helm --wait \
     --set "cf.api=$CF_API" \
     --set "cf.username=${CF_USERNAME:?required},cf.password=${CF_PASSWORD:?required}" \
     --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
@@ -72,6 +51,21 @@ helm upgrade pws-broker ./helm \
 ```
 
 Next, follow the instructions for registering with your Service Catalog. You'll now be able to view/provision/bind services within your Kubernetes cluster that are actually provisioned in the remote Cloud Foundry environment.
+
+For example:
+
+```shell
+kubectl create secret generic pws-broker-cf-marketplace-servicebroker-basic-auth \
+--from-literal username=broker \
+--from-literal password=broker
+
+svcat register pws-broker-cf-marketplace-servicebroker \
+--url http://pws-broker-cf-marketplace-servicebroker.default.svc.cluster.local:8080 \
+--scope cluster \
+--basic-secret pws-broker-cf-marketplace-servicebroker-basic-auth
+```
+
+You'll now be able to view classes and plans, and to then instantiate and bind service instances.
 
 ```console
 $ svcat get plans
