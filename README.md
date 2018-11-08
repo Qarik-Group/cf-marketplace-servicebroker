@@ -43,7 +43,11 @@ cf target -s playtime-cf-marketplace
 Next, install/upgrade the Helm chart:
 
 ```shell
-helm upgrade --install pws-broker ./helm --wait \
+helm repo add starkandwayne s3://helm.starkandwayne.com/charts
+helm repo update
+helm upgrade --install --namespace catalog pws-broker \
+    starkandwayne/cf-marketplace-servicebroker \
+    --wait \
     --set "cf.api=$CF_API" \
     --set "cf.username=${CF_USERNAME:?required},cf.password=${CF_PASSWORD:?required}" \
     --set "cf.organizationGUID=$(jq -r .OrganizationFields.GUID ~/.cf/config.json)" \
