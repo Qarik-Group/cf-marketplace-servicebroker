@@ -1,5 +1,8 @@
 apiVersion: v1
-appVersion: "1.0"
 description: Service Catalog service broker for a Cloud Foundry Marketplace
 name: cf-marketplace-servicebroker
-version: 0.1.0
+version: "0.1.0"
+maintainers:
+- name: Dr Nic Williams
+  email: drnicwilliams@gmail.com
+  url: https://www.starkandwayne.com/blog/about-drnic/
