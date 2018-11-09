@@ -56,13 +56,30 @@ meta:
 groups:
   - name: (( grab meta.name ))
     jobs:
-      - major
+      - latest
   - name: versioning
     jobs:
       - major
       - minor
       - patch
 jobs:
+  - name: latest
+    public: true
+    serial: true
+    plan:
+      - get: git
+        trigger: true
+      - put: image-latest
+        params:
+          build: git
+        on_failure:
+          put: notify
+          params:
+            channel:  (( grab meta.slack.channel ))
+            username: (( grab meta.slack.username ))
+            icon_url: (( grab meta.slack.icon ))
+            text:    '(( concat meta.slack.fail_url " " meta.pipeline ": patch job failed" ))'
+
   - name: minor
     public: true
     plan:
@@ -96,12 +113,18 @@ resource_types:
       repository: cfcommunity/slack-notification-resource
 
 resources:
-  # - name: git
-  #   type: git
-  #   source:
-  #     uri:         (( grab meta.github.uri ))
-  #     branch:      (( grab meta.github.branch ))
-  #     private_key: (( grab meta.github.private_key ))
+  - name: git
+    type: git
+    source:
+      uri:         (( grab meta.github.uri ))
+      branch:      (( grab meta.github.branch ))
+      private_key: (( grab meta.github.private_key ))
+
+  - name: image-latest
+    type: docker-image
+    source:
+      .: (( inject meta.dockerhub ))
+      tag: latest
 
   - name: version
     type: semver
