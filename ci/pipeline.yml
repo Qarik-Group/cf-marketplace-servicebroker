@@ -56,14 +56,14 @@ meta:
 groups:
   - name: (( grab meta.name ))
     jobs:
-      - latest
+      - latest-image
   - name: versioning
     jobs:
       - major
       - minor
       - patch
 jobs:
-  - name: latest
+  - name: latest-image
     public: true
     serial: true
     plan:
