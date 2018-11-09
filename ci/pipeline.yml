@@ -92,42 +92,52 @@ jobs:
     - do:
       - name: inputs
         aggregate:
+          # - { get: version,  params: {bump: final} }
+          # - { get: git }
           - { get: version, passed: [rc], params: {bump: final} }
           - { get: git,     passed: [rc] }
-      - name: package-chart
-        task: package-chart
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: (( grab meta.image.name ))
-              tag:        (( grab meta.image.tag ))
-          inputs:
-            - name: version
-            - name: git
-          outputs:
-            - name: gh
-            - name: pushme
-            - name: notifications
-          run:
-            path: ./git/ci/scripts/shipit
-            args: []
+          - { get: image-latest, passed: [latest-image], params: { save: true } }
+      - aggregate:
+        - name: docker-push-tag
+          put: image-latest # as 'vX.Y.Z'
           params:
-            CHART_NAME:   (( grab meta.name ))
-            REPO_ROOT:    git
-            VERSION_FROM: version/number
-            RELEASE_ROOT: gh
-            REPO_OUT:     pushme
-            BRANCH:        (( grab meta.github.branch ))
-            GITHUB_OWNER:  (( grab meta.github.owner ))
-            GIT_EMAIL:      (( grab meta.git.email ))
-            GIT_NAME:       (( grab meta.git.name ))
-            NOTIFICATION_OUT: notifications
-            AWS_ACCESS_KEY_ID:     (( grab meta.aws.access_key ))
-            AWS_SECRET_ACCESS_KEY: (( grab meta.aws.secret_key ))
-            AWS_DEFAULT_REGION:    (( grab meta.aws.region_name ))
-            HELM_S3_BUCKET_URI:    (( grab meta.aws.charts_uri ))
+            tag:        version/number
+            tag_prefix: v
+            load:       image-latest
+        - name: package-chart
+          task: package-chart
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: (( grab meta.image.name ))
+                tag:        (( grab meta.image.tag ))
+            inputs:
+              - name: version
+              - name: git
+            outputs:
+              - name: gh
+              - name: pushme
+              - name: notifications
+            run:
+              path: ./git/ci/scripts/shipit
+              args: []
+            params:
+              CHART_NAME:   (( grab meta.name ))
+              REPO_ROOT:    git
+              VERSION_FROM: version/number
+              RELEASE_ROOT: gh
+              REPO_OUT:     pushme
+              BRANCH:        (( grab meta.github.branch ))
+              GITHUB_OWNER:  (( grab meta.github.owner ))
+              GIT_EMAIL:      (( grab meta.git.email ))
+              GIT_NAME:       (( grab meta.git.name ))
+              NOTIFICATION_OUT: notifications
+              AWS_ACCESS_KEY_ID:     (( grab meta.aws.access_key ))
+              AWS_SECRET_ACCESS_KEY: (( grab meta.aws.secret_key ))
+              AWS_DEFAULT_REGION:    (( grab meta.aws.region_name ))
+              HELM_S3_BUCKET_URI:    (( grab meta.aws.charts_uri ))
 
       - name: upload-git
         put: git
@@ -167,6 +177,7 @@ jobs:
     plan:
     - do:
       - aggregate:
+          # - { get: git,     trigger: true }
           - { get: git,     trigger: true, passed: [latest-image] }
           - { get: version, trigger: true, params: {pre: rc} }
       - task: release-notes
