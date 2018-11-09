@@ -45,8 +45,8 @@ Next, install/upgrade the Helm chart:
 ```shell
 helm repo add starkandwayne s3://helm.starkandwayne.com/charts
 helm repo update
-helm upgrade --install --namespace catalog pws-broker \
-    starkandwayne/cf-marketplace-servicebroker \
+helm upgrade --install pws-broker starkandwayne/cf-marketplace-servicebroker \
+    --namespace catalog \
     --wait \
     --set "cf.api=$CF_API" \
     --set "cf.username=${CF_USERNAME:?required},cf.password=${CF_PASSWORD:?required}" \
