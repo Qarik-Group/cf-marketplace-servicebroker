@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: starkandwayne/cf-marketplace-servicebroker
-  tag: 0.1.0
+  tag: 0.1.1
   pullPolicy: IfNotPresent
   # tag: latest
   # pullPolicy: Always
