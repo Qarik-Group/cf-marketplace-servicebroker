@@ -102,7 +102,6 @@ jobs:
           put: image-latest # as 'vX.Y.Z'
           params:
             tag:        version/number
-            tag_prefix: v
             load:       image-latest
         - name: package-chart
           task: package-chart
