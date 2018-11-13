@@ -15,14 +15,14 @@ meta:
     username: ((dockerhub-username))
     email:    ((dockerhub-email))
     password: ((dockerhub-password))
-    repository: (( concat meta.github.owner "/" meta.name ))
+    repository: (( concat "starkandwayne/" meta.name ))
 
   aws:
     bucket:      (( grab meta.pipeline ))
     region_name: us-east-1
     access_key:  ((aws-access-key))
     secret_key:  ((aws-secret-key))
-    charts_uri: s3://helm.starkandwayne.com/charts
+    charts_uri:  s3://helm.starkandwayne.com/charts
 
   github:
     owner:  starkandwayne
