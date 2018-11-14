@@ -43,6 +43,7 @@ cf target -s playtime-cf-marketplace
 Next, install/upgrade the Helm chart:
 
 ```shell
+helm plugin install https://github.com/hypnoglow/helm-s3.git
 helm repo add starkandwayne s3://helm.starkandwayne.com/charts
 helm repo update
 helm upgrade --install pws-broker starkandwayne/cf-marketplace-servicebroker \
