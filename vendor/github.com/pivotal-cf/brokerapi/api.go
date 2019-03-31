@@ -22,6 +22,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/pivotal-cf/brokerapi/middlewares/originating_identity_header"
+
 	"code.cloudfoundry.org/lager"
 	"github.com/gorilla/mux"
 	"github.com/pivotal-cf/brokerapi/auth"
@@ -62,6 +64,7 @@ const (
 	invalidServiceID              = "invalid-service-id"
 	invalidPlanID                 = "invalid-plan-id"
 	concurrentAccessKey           = "get-instance-during-update"
+	maintenanceInfoConflictKey    = "maintenance-info-conflict"
 )
 
 var (
@@ -79,7 +82,12 @@ type BrokerCredentials struct {
 func New(serviceBroker ServiceBroker, logger lager.Logger, brokerCredentials BrokerCredentials) http.Handler {
 	router := mux.NewRouter()
 	AttachRoutes(router, serviceBroker, logger)
-	return auth.NewWrapper(brokerCredentials.Username, brokerCredentials.Password).Wrap(router)
+
+	authMiddleware := auth.NewWrapper(brokerCredentials.Username, brokerCredentials.Password).Wrap
+	router.Use(authMiddleware)
+	router.Use(originating_identity_header.AddToContext)
+
+	return router
 }
 
 func AttachRoutes(router *mux.Router, serviceBroker ServiceBroker, logger lager.Logger) {
@@ -176,6 +184,7 @@ func (h serviceBrokerHandler) provision(w http.ResponseWriter, req *http.Request
 	services, _ := h.serviceBroker.Services(req.Context())
 	for _, service := range services {
 		if service.ID == details.ServiceID {
+			req = req.WithContext(AddServiceToContext(req.Context(), &service))
 			valid = true
 			break
 		}
@@ -192,6 +201,7 @@ func (h serviceBrokerHandler) provision(w http.ResponseWriter, req *http.Request
 	for _, service := range services {
 		for _, plan := range service.Plans {
 			if plan.ID == details.PlanID {
+				req = req.WithContext(AddServicePlanToContext(req.Context(), &plan))
 				valid = true
 				break
 			}

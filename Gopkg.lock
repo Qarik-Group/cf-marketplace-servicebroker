@@ -41,14 +41,14 @@
   version = "v1.7.0"
 
 [[projects]]
-  branch = "retrievable"
   name = "github.com/pivotal-cf/brokerapi"
   packages = [
     ".",
-    "auth"
+    "auth",
+    "middlewares/originating_identity_header"
   ]
-  revision = "4925f3b3d7d0bedf012129b18ccce1be25925903"
-  source = "github.com/drnic/brokerapi"
+  revision = "4c4fa5e7f2e1a107797d91875abd3091d13d080b"
+  version = "v4.2.3"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -98,6 +98,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "037b0ae7f7a359831cf47b2eba02c52c53e8523f4131bd5e8d954e7fe11678cd"
+  inputs-digest = "3ca52377da5da9761bb931044cb7004338aa4582c0d0a954e9de24a82888ac17"
   solver-name = "gps-cdcl"
   solver-version = 1
