@@ -67,13 +67,13 @@ For example:
 
 ```shell
 kubectl create secret generic pws-broker-cf-marketplace-servicebroker-basic-auth \
---from-literal username=broker \
---from-literal password=broker
+    --from-literal username=broker \
+    --from-literal password=broker
 
 svcat register pws-broker-cf-marketplace-servicebroker \
---url http://pws-broker-cf-marketplace-servicebroker.default.svc.cluster.local:8080 \
---scope cluster \
---basic-secret pws-broker-cf-marketplace-servicebroker-basic-auth
+    --url http://pws-broker-cf-marketplace-servicebroker.default.svc.cluster.local:8080 \
+    --scope cluster \
+    --basic-secret pws-broker-cf-marketplace-servicebroker-basic-auth
 ```
 
 You'll now be able to view classes and plans, and to then instantiate and bind service instances.
