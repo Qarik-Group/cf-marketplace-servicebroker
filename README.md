@@ -1,5 +1,11 @@
 # Service Broker for a Cloud Foundry Marketplace
 
+This project provides a Helm charge (a Kubernetes deployment of a single CLI, written in Golang within this repo) to run an HTTP-based API that implements the [Open Service Broker API](https://www.openservicebrokerapi.org/) to allow access to a service catalog available on an adjacent Cloud Foundry.
+
+When you use Kubernetes you should not deploy, run, maintain, upgrade, backup, nor restore databases nor any stateful facilities. Leave it to people who will do it well. One way to separate these concerns is the Kubernetes incubator project [Service Catalog](https://svc-cat.io/). You gain access to a suite of "services" that your organization or third-party organizations are prepared to maintain for you as a service. For example, you might use the Service Catalog to request a PostgreSQL database from your underlying cloud provider.
+
+This project provides a service broker to allow your Kubernetes cluster to access the pre-existing services registered with a neighboring Cloud Foundry marketplace. It only requires that your Kubernetes cluster has networking access to the Cloud Foundry API, and that your applications' pods have networking access to the provisioned service instances (such as databases).
+
 ## TODOs & Ideas
 
 - [X] support UAA client/secret
