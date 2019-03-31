@@ -28,8 +28,8 @@ type Service struct {
 	Name                 string                  `json:"name"`
 	Description          string                  `json:"description"`
 	Bindable             bool                    `json:"bindable"`
-	InstancesRetrievable bool                    `json:"instances_retrievable"`
-	BindingsRetrievable  bool                    `json:"bindings_retrievable"`
+	InstancesRetrievable bool                    `json:"instances_retrievable,omitempty"`
+	BindingsRetrievable  bool                    `json:"bindings_retrievable,omitempty"`
 	Tags                 []string                `json:"tags,omitempty"`
 	PlanUpdatable        bool                    `json:"plan_updateable"`
 	Plans                []ServicePlan           `json:"plans"`
@@ -45,13 +45,14 @@ type ServiceDashboardClient struct {
 }
 
 type ServicePlan struct {
-	ID          string               `json:"id"`
-	Name        string               `json:"name"`
-	Description string               `json:"description"`
-	Free        *bool                `json:"free,omitempty"`
-	Bindable    *bool                `json:"bindable,omitempty"`
-	Metadata    *ServicePlanMetadata `json:"metadata,omitempty"`
-	Schemas     *ServiceSchemas      `json:"schemas,omitempty"`
+	ID              string               `json:"id"`
+	Name            string               `json:"name"`
+	Description     string               `json:"description"`
+	Free            *bool                `json:"free,omitempty"`
+	Bindable        *bool                `json:"bindable,omitempty"`
+	Metadata        *ServicePlanMetadata `json:"metadata,omitempty"`
+	Schemas         *ServiceSchemas      `json:"schemas,omitempty"`
+	MaintenanceInfo *MaintenanceInfo     `json:"maintenance_info,omitempty"`
 }
 
 type ServiceSchemas struct {
@@ -93,6 +94,11 @@ type ServiceMetadata struct {
 	SupportUrl          string `json:"supportUrl,omitempty"`
 	Shareable           *bool  `json:"shareable,omitempty"`
 	AdditionalMetadata  map[string]interface{}
+}
+
+type MaintenanceInfo struct {
+	Public  map[string]string `json:"public,omitempty"`
+	Private string            `json:"private,omitempty"`
 }
 
 func FreeValue(v bool) *bool {

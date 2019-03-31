@@ -42,11 +42,11 @@ type ServiceBinding struct {
 
 func (c *Client) ListServiceBindingsByQuery(query url.Values) ([]ServiceBinding, error) {
 	var serviceBindings []ServiceBinding
-	var serviceBindingsResp ServiceBindingsResponse
-	pages := 0
-
 	requestUrl := "/v2/service_bindings?" + query.Encode()
+
 	for {
+		var serviceBindingsResp ServiceBindingsResponse
+
 		r := c.NewRequest("GET", requestUrl)
 		resp, err := c.DoRequest(r)
 		if err != nil {
@@ -72,12 +72,8 @@ func (c *Client) ListServiceBindingsByQuery(query url.Values) ([]ServiceBinding,
 		if requestUrl == "" {
 			break
 		}
-		pages += 1
-		totalPages := serviceBindingsResp.Pages
-		if totalPages > 0 && pages >= totalPages {
-			break
-		}
 	}
+
 	return serviceBindings, nil
 }
 
@@ -147,6 +143,18 @@ func (c *Client) CreateRouteServiceBinding(routeGUID, serviceInstanceGUID string
 	}
 	if resp.StatusCode != http.StatusCreated {
 		return errors.Wrapf(err, "Error binding route %s to service instance %s, response code %d", routeGUID, serviceInstanceGUID, resp.StatusCode)
+	}
+	return nil
+}
+
+func (c *Client) DeleteRouteServiceBinding(routeGUID, serviceInstanceGUID string) error {
+	req := c.NewRequest("DELETE", fmt.Sprintf("/v2/service_instances/%s/routes/%s", serviceInstanceGUID, routeGUID))
+	resp, err := c.DoRequest(req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return errors.Wrapf(err, "Error deleting bound route %s from service instance %s, response code %d", routeGUID, serviceInstanceGUID, resp.StatusCode)
 	}
 	return nil
 }

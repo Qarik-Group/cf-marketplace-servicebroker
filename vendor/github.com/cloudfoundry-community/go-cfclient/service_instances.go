@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -159,6 +160,18 @@ func (c *Client) CreateServiceInstance(req ServiceInstanceRequest) (ServiceInsta
 	}
 
 	return c.mergeServiceInstance(sir), nil
+}
+
+func (c *Client) UpdateServiceInstance(serviceInstanceGuid string, updatedConfiguration io.Reader, async bool) error {
+	u := fmt.Sprintf("/v2/service_instances/%s?accepts_incomplete=%t", serviceInstanceGuid, async)
+	resp, err := c.DoRequest(c.NewRequestWithBody("PUT", u, updatedConfiguration))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusAccepted {
+		return errors.Wrapf(err, "Error updating service instance %s, response code %d", serviceInstanceGuid, resp.StatusCode)
+	}
+	return nil
 }
 
 func (c *Client) DeleteServiceInstance(guid string, recursive, async bool) error {

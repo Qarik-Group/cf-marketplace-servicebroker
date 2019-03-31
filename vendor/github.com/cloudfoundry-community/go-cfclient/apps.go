@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -45,8 +46,8 @@ const (
 )
 
 type DockerCredentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 type AppCreateRequest struct {
@@ -241,6 +242,26 @@ func (a *App) Space() (Space, error) {
 		return Space{}, errors.Wrap(err, "Error unmarshalling body")
 	}
 	return a.c.mergeSpaceResource(spaceResource), nil
+}
+
+func (a *App) Summary() (AppSummary, error) {
+	var appSummary AppSummary
+	requestUrl := fmt.Sprintf("/v2/apps/%s/summary", a.Guid)
+	r := a.c.NewRequest("GET", requestUrl)
+	resp, err := a.c.DoRequest(r)
+	if err != nil {
+		return AppSummary{}, errors.Wrap(err, "Error requesting app summary")
+	}
+	resBody, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return AppSummary{}, errors.Wrap(err, "Error reading app summary body")
+	}
+	err = json.Unmarshal(resBody, &appSummary)
+	if err != nil {
+		return AppSummary{}, errors.Wrap(err, "Error unmarshalling app summary")
+	}
+	return appSummary, nil
 }
 
 // ListAppsByQueryWithLimits queries totalPages app info. When totalPages is
@@ -582,6 +603,30 @@ func (c *Client) CreateApp(req AppCreateRequest) (App, error) {
 		return App{}, errors.Wrapf(err, "Error deserializing app %s response", req.Name)
 	}
 	return c.mergeAppResource(appResp), nil
+}
+
+func (c *Client) StartApp(guid string) error {
+	startRequest := strings.NewReader(`{ "state": "STARTED" }`)
+	resp, err := c.DoRequest(c.NewRequestWithBody("PUT", fmt.Sprintf("/v2/apps/%s", guid), startRequest))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.Wrapf(err, "Error starting app %s, response code: %d", guid, resp.StatusCode)
+	}
+	return nil
+}
+
+func (c *Client) StopApp(guid string) error {
+	stopRequest := strings.NewReader(`{ "state": "STOPPED" }`)
+	resp, err := c.DoRequest(c.NewRequestWithBody("PUT", fmt.Sprintf("/v2/apps/%s", guid), stopRequest))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.Wrapf(err, "Error stopping app %s, response code: %d", guid, resp.StatusCode)
+	}
+	return nil
 }
 
 func (c *Client) DeleteApp(guid string) error {
