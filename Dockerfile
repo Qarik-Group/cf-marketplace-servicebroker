@@ -1,4 +1,4 @@
-FROM golang:1.11.1 as build
+FROM golang:1.12.1 as build
 WORKDIR /go/src/github.com/starkandwayne/cf-marketplace-servicebroker/
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go install -v github.com/starkandwayne/cf-marketplace-servicebroker/cmd/cf-marketplace-servicebroker
