@@ -13,7 +13,6 @@ meta:
 
   dockerhub:
     username: ((dockerhub-username))
-    email:    ((dockerhub-email))
     password: ((dockerhub-password))
     repository: (( concat "starkandwayne/" meta.name ))
 
