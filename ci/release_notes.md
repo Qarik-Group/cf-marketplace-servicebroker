@@ -1,1 +1,0 @@
-* using fork of `concourse-pack-resource` with `tag_file` support
