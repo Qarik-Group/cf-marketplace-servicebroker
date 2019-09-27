@@ -25,7 +25,6 @@ meta:
     region_name: us-east-1
     access_key:  ((aws-access-key))
     secret_key:  ((aws-secret-key))
-    charts_uri:  s3://helm.starkandwayne.com/charts
 
   github:
     owner:  starkandwayne
