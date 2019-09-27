@@ -17,6 +17,10 @@ meta:
     password: ((dockerhub-password))
     repository: (( concat "starkandwayne/" meta.name ))
 
+  chartmuseum:
+    user: ((chartmuseum-user))
+    pass: ((chartmuseum-pass))
+
   aws:
     bucket:      (( grab meta.pipeline ))
     region_name: us-east-1

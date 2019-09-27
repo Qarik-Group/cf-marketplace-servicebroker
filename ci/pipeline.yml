@@ -18,7 +18,7 @@ meta:
   url:      (( param "Please specify the full url of the target Concourse CI" ))
   pipeline: (( grab meta.name ))
   image:
-    name: starkandwayne/concourse
+    name: starkandwayne/concourse-kubernetes
     tag: latest
 
   git:
@@ -30,7 +30,11 @@ meta:
     region_name: us-east-1
     access_key: (( param "Please set your AWS Access Key ID" ))
     secret_key: (( param "Please set your AWS Secret Key ID" ))
-    charts_uri: (( param "Please set your s3://bucket-name/charts URI" ))
+
+  chartmuseum:
+    uri: https://chartmuseum.starkandwayne.com
+    user: (( param "Please provide basic auth user for chartmuseum" ))
+    pass: (( param "Please provide basic auth password for chartmuseum" ))
 
   github:
     uri:          (( concat "git@github.com:" meta.github.owner "/" meta.github.repo ))
@@ -40,8 +44,10 @@ meta:
     private_key:  (( param "Please generate an SSH Deployment Key for this repo and specify it here" ))
     access_token: (( param "Please generate a Personal Access Token and specify it here" ))
 
+  pack:
+    builder: cloudfoundry/cnb:tiny
+
   dockerhub:
-    email:      (( param "Please specify the email address for your Dockerhub account" ))
     username:   (( param "Please specify the username for your Dockerhub account" ))
     password:   (( param "Please specify the password for your Dockerhub account" ))
     repository: (( param "Please specify the name of the image (repo/name) that you are building" ))
@@ -60,6 +66,7 @@ groups:
   - name: (( grab meta.name ))
     jobs:
       - latest-image
+      - pre
       - rc
       - shipit
   - name: versioning
@@ -77,6 +84,7 @@ jobs:
       - put: image-latest
         params:
           build: git
+          builder: (( grab meta.pack.builder ))
         on_failure:
           put: notify
           params:
@@ -90,19 +98,15 @@ jobs:
     serial: true
     plan:
     - do:
-      - name: inputs
-        aggregate:
-          # - { get: version,  params: {bump: final} }
-          # - { get: git }
-          - { get: version, passed: [rc], params: {bump: final} }
-          - { get: git,     passed: [rc] }
-          - { get: image-latest, passed: [latest-image], params: { save: true } }
+      - { get: version, passed: [rc], params: {bump: final} }
+      - { get: git,     passed: [rc] }
+      - { get: image-latest, passed: [latest-image] }
       - aggregate:
-        - name: docker-push-tag
-          put: image-latest # as 'vX.Y.Z'
+        - put: image-latest # as 'vX.Y.Z'
           params:
             tag:        version/number
-            load:       image-latest
+            build:   git
+            builder: (( grab meta.pack.builder ))
         - name: package-chart
           task: package-chart
           config:
@@ -133,10 +137,9 @@ jobs:
               GIT_EMAIL:      (( grab meta.git.email ))
               GIT_NAME:       (( grab meta.git.name ))
               NOTIFICATION_OUT: notifications
-              AWS_ACCESS_KEY_ID:     (( grab meta.aws.access_key ))
-              AWS_SECRET_ACCESS_KEY: (( grab meta.aws.secret_key ))
-              AWS_DEFAULT_REGION:    (( grab meta.aws.region_name ))
-              HELM_S3_BUCKET_URI:    (( grab meta.aws.charts_uri ))
+              HELM_REPO_URI:         (( grab meta.chartmuseum.uri ))
+              HELM_REPO_USER:        (( grab meta.chartmuseum.user))
+              HELM_REPO_PASS:        (( grab meta.chartmuseum.pass))
 
       - name: upload-git
         put: git
@@ -170,15 +173,63 @@ jobs:
           icon_url: (( grab meta.slack.icon ))
           text:    '(( concat meta.slack.fail_url " " meta.pipeline ": shipit job failed" ))'
 
+
+  - name: pre
+    public: true
+    serial: true
+    plan:
+    - do:
+      - get: git
+        passed: [latest-image]
+        trigger: true
+      - get: version
+        trigger: true
+      - task: release-notes
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: (( grab meta.image.name ))
+              tag:        (( grab meta.image.tag ))
+          run:
+            path: sh
+            args:
+            - -ce
+            - |
+              cd git
+              if [ -f ci/release_notes.md ]; then
+                echo "######   RELEASE NOTES   ###############"
+                echo
+                cat ci/release_notes.md
+                echo
+                echo "########################################"
+                echo
+              else
+                echo "NO RELEASE NOTES HAVE BEEN WRITTEN"
+                echo "You *might* want to do that before"
+                echo "hitting (+) on that shipit job..."
+                echo
+              fi
+          inputs:
+          - name: git
+      on_failure:
+        put: notify
+        params:
+          channel:  (( grab meta.slack.channel ))
+          username: (( grab meta.slack.username ))
+          icon_url: (( grab meta.slack.icon ))
+          link: https://pipes.starkandwayne.com/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+          message: release candidate job 'pre' failed (which is unusual).
+          ok: false
+
   - name: rc
     public: true
     serial: true
     plan:
     - do:
-      - aggregate:
-          # - { get: git,     trigger: true }
-          - { get: git,     trigger: true, passed: [latest-image] }
-          - { get: version, trigger: true, params: {pre: rc} }
+      - { get: git,     trigger: true, passed: [pre] }
+      - { get: version, trigger: false, params: {pre: rc} }
       - task: release-notes
         config:
           platform: linux
@@ -250,6 +301,13 @@ resource_types:
     source:
       repository: cfcommunity/slack-notification-resource
 
+  - name: pack-image-resource
+    type: docker-image
+    privileged: true
+    source:
+      repository: bstick12/pack-concourse-resource
+      version: latest
+
 resources:
   - name: git
     type: git
@@ -259,7 +317,7 @@ resources:
       private_key: (( grab meta.github.private_key ))
 
   - name: image-latest
-    type: docker-image
+    type: pack-image-resource
     source:
       .: (( inject meta.dockerhub ))
       tag: latest

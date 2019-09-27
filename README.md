@@ -151,3 +151,27 @@ $ eden catalog
 Service Name     Plan Name  Description
 some-cf-service  plan-a     Probably smallest plan
 ```
+
+## Docker
+
+Below are sections on building with OCI/Docker.
+
+### Cloud Native Buildpacks
+
+You can compile this project and produce an OCI/Docker image with [Cloud Native Buildpacks](https://buildpacks.io/) [`pack` CLI](https://buildpacks.io/docs/install-pack/):
+
+```plain
+pack build cfcommunity/worlds-simplest-service-broker --builder cloudfoundry/cnb:tiny
+```
+
+NOTE: the [CI pipeline](https://ci2.starkandwayne.com/teams/starkandwayne/pipelines/cf-marketplace-servicebroker/jobs/latest-image/builds/5) uses this method to create OCI/docker images.
+
+Whilst the resulting OCI is larger (`docker images` says `39MB` vs `19MB` for `docker build`), the image includes a lot of metadata about the tools used to build the application, and supports the `pack rebase` command to allow operators to update the base `run` image over time without ever needing the OCI to be rebuilt or redistributed. Read https://buildpacks.io/ for more.
+
+### Docker Build
+
+The project also contains a `Dockerfile` for `docker build`:
+
+```plain
+docker build -t cfcommunity/worlds-simplest-service-broker .
+```
