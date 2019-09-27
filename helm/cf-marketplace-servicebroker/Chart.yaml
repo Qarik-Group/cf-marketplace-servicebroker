@@ -1,7 +1,7 @@
 apiVersion: v1
 description: Service Catalog service broker for a Cloud Foundry Marketplace
 name: cf-marketplace-servicebroker
-version: 0.1.4
+version: 0.1.5
 icon: https://github.com/cloudfoundry-community/worlds-simplest-service-broker/raw/master/helm/worlds-simplest-service-broker/starkandwayne-logo-blue.png
 maintainers:
 - name: Dr Nic Williams
